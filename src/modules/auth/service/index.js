@@ -3,10 +3,18 @@ const Crypto = require("node:crypto");
 
 const assignJwt = async (userId) => {
   try {
-    const token = await jwt.sign({ _id: userId }, { expireIn: "10min" });
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw Error("JWT_SECRET is required");
+    }
+
+    const token = jwt.sign({ _id: userId }, jwtSecret, { expiresIn: "24h" });
     return token;
   } catch (error) {
-    throw Error("Error while create jwt token", error);
+    throw new Error(error?.message || "Error while create jwt token", {
+      cause: error,
+    });
   }
 };
 

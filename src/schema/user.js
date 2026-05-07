@@ -3,7 +3,8 @@ const options = { type: String, require: true };
 
 const userSchema = new mongoose.Schema(
   {
-    name: options,
+    firstName: options,
+    lastName: options,
     email: options,
     password: options,
   },

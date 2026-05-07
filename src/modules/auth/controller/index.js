@@ -5,22 +5,25 @@ const UserModel = require("../../../schema/user");
 
 const register = async (request, response) => {
   try {
-    const { name, email, password } = request?.body;
+    const { firstName, lastName, email, password } = request?.body;
 
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return response.status(status.BAD_REQUEST).json({
         success: false,
-        message: "name or email or passowrd fields are required",
+        message:
+          "firstName or lastName or email or passowrd fields are required",
       });
     }
 
     const data = {
-      name,
+      firstName,
+      lastName,
       email,
       password: hashPassword(password),
     };
 
     const userData = await UserModel.create(data);
+    console.log('userData: ', userData);
     const token = await assignJwt(userData?._id);
 
     return response.status(status.OK).json({
@@ -29,7 +32,11 @@ const register = async (request, response) => {
       token,
     });
   } catch (error) {
-    throw Error("Error while register new user", error);
+    console.log('error: ', error);
+    response.status(status.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: error?.message,
+    });
   }
 };
 
