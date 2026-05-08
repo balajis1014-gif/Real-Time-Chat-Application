@@ -7,6 +7,16 @@ const userSchema = new mongoose.Schema(
     lastName: options,
     email: options,
     password: options,
+    status: {
+      type: String,
+      enum: ["active", "deactive"],
+      default: "active",
+      require: true,
+    },
+    phone: {
+      countryCode: options,
+      nationalNumber: options,
+    },
   },
   { timestamps: true },
 );

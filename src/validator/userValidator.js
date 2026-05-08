@@ -5,6 +5,20 @@ const registerSchema = Joi.object({
   lastName: Joi.string().required(),
   email: Joi.string().required(),
   password: Joi.string().required(),
+  phone: Joi.object({
+    countryCode: Joi.string().required(),
+    nationalNumber: Joi.string().required(),
+  }),
 });
 
-module.exports = { registerSchema };
+const loginSchema = Joi.object({
+  email: Joi.string().required(),
+  password: Joi.string().required(),
+});
+
+const verifyOtpSchema = Joi.object({
+  email: Joi.string().required(),
+  otp: Joi.string().required(),
+});
+
+module.exports = { registerSchema, loginSchema, verifyOtpSchema };

@@ -18,6 +18,23 @@ const assignJwt = async (userId) => {
   }
 };
 
+const verifyJwt = async (token) => {
+  try {
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw Error("JWT_SECRET is required");
+    }
+
+    return jwt.verify(token, jwtSecret);
+  } catch (error) {
+    console.log("error: ", error);
+    throw new Error(error?.message || "Error while verify jwt token", {
+      cause: error,
+    });
+  }
+};
+
 const hashPassword = (password) => {
   try {
     return Crypto.createHash("md5").update(password).digest("hex");
@@ -26,4 +43,8 @@ const hashPassword = (password) => {
   }
 };
 
-module.exports = { assignJwt, hashPassword };
+const generateOtp = async () => {
+  return Crypto.randomInt(100000, 999999);
+};
+
+module.exports = { assignJwt, verifyJwt, hashPassword, generateOtp };

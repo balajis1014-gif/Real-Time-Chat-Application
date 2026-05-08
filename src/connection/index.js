@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
+const { CONFIG } = require("../config");
 
-const connectionUrl = process.env.MONGO_URL;
+const connectionUrl = CONFIG.DB.URL;
 
 const connectDb = async () => {
   try {
