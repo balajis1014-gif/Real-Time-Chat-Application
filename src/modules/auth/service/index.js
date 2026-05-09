@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const Crypto = require("node:crypto");
 
 const assignJwt = async (userId) => {
@@ -35,9 +36,9 @@ const verifyJwt = async (token) => {
   }
 };
 
-const hashPassword = (password) => {
+const hashPassword = async (password) => {
   try {
-    return Crypto.createHash("md5").update(password).digest("hex");
+    return await bcrypt.hash(password, 10);
   } catch (error) {
     throw Error("Error while hash password", error);
   }

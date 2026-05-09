@@ -13,6 +13,7 @@ const CONFIG = {
   DB: {
     URL: ENV.MONGO_URL,
   },
+  JWT_SECRET: ENV.JWT_SECRET,
 };
 
 module.exports = { CONFIG };

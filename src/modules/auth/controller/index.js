@@ -5,6 +5,7 @@ const UserModel = require("../../../schema/user");
 const redisConnection = require("../../../connection/redis");
 const { sendOtpMail } = require("../../../utils");
 const { CONSTANT } = require("../../../utils/constent");
+const { comparePassword } = require("../../user/service");
 
 const register = async (request, response) => {
   try {
@@ -18,12 +19,31 @@ const register = async (request, response) => {
       });
     }
 
+    const existingUser = await UserModel.findOne({
+      status: CONSTANT.USER_STATUS.ACTIVE,
+      $or: [
+        { email },
+        {
+          "phone.countryCode": phone?.countryCode,
+          "phone.nationalNumber": phone?.nationalNumber,
+        },
+      ],
+    }).lean();
+
+    if (existingUser) {
+      const isEmailExists = existingUser.email === email;
+
+      return response.status(status.CONFLICT).json({
+        success: false,
+        message: isEmailExists
+          ? "Email already exists"
+          : "Phone number already exists",
+      });
+    }
+
     const data = {
-      firstName,
-      lastName,
-      email,
-      password: hashPassword(password),
-      phone,
+      ...request.body,
+      password: await hashPassword(password),
     };
 
     const userData = await UserModel.create(data);
@@ -53,14 +73,17 @@ const loginWithOtp = async (request, response) => {
       });
     }
 
-    const decrptyPassword = await hashPassword(password);
-
-    const user = await UserModel.findOne({
-      email,
-      password: decrptyPassword,
-    })
+    const user = await UserModel.findOne({ email })
       .select("-__v -updatedAt")
       .lean();
+
+    const isMatch = await comparePassword(password, user?.password);
+    if (!isMatch) {
+      return response.status(status.not.NOT_FOUND).json({
+        success: false,
+        message: "Incorect password",
+      });
+    }
 
     if (!user) {
       return response.status(status.NOT_FOUND).json({

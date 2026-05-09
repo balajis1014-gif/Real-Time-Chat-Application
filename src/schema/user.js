@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema(
       countryCode: options,
       nationalNumber: options,
     },
+    bio: String,
+    gender: options,
   },
   { timestamps: true },
 );
